@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#000000">
+<script>
+  if('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+  }
+</script><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minhas Anotações</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0a0a12">
+    <script>
+      if('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js');
+      }
+    </script>
+
+    <style>
+        :root {
+            --bg-primary: #0a0a12;
+            --bg-secondary: #12121e;
+            --bg-input: #1a1a2e;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --accent-color: #4a90e2;
+            --success-color: #2ecc71;
+            --danger-color: #e74c3c;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+            padding-bottom: 50px;
+        }
+
+        #topo-data-hora {
+            background-color: var(--bg-secondary);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 1px solid #2a2a3a;
+        }
+
+        #data-hora-texto { font-size: 18px; color: var(--text-secondary); font-weight: bold; }
+
+        #msg-sucesso {
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            display: none; 
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        #container-form {
+            background-color: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #2a2a3a;
+            margin-bottom: 30px;
+        }
+
+        #container-form h2 { margin-bottom: 20px; color: var(--accent-color); border-bottom: 1px solid #2a2a3a; padding-bottom: 10px; }
+        .campo-form { margin-bottom: 15px; }
+        .campo-form label { display: block; margin-bottom: 5px; color: var(--text-secondary); font-size: 14px; }
+
+        .campo-form input, .campo-form select, .campo-form textarea {
+            width: 100%; padding: 12px; background-color: var(--bg-input);
+            border: 1px solid #2a2a3a; border-radius: 5px; color: var(--text-primary);
+            font-size: 16px; outline: none;
+        }
+
+        .campo-form input:focus, .campo-form select:focus, .campo-form textarea:focus { border-color: var(--accent-color); }
+        .campo-form textarea { height: 100px; resize: vertical; }
+
+        button.btn-salvar {
+            width: 100%; padding: 15px; background-color: var(--accent-color); color: white;
+            border: none; border-radius: 5px; font-size: 18px; font-weight: bold; cursor: pointer;
+        }
+        .btn-salvar:active { background-color: #357abd; }
+
+        #container-lista h2 { color: var(--accent-color); margin-bottom: 15px; border-bottom: 1px solid #2a2a3a; padding-bottom: 10px; }
+
+        .card-anotacao {
+            background-color: var(--bg-secondary); border: 1px solid #2a2a3a;
+            border-left: 4px solid var(--accent-color); padding: 15px; border-radius: 8px; margin-bottom: 15px;
+        }
+
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .card-titulo { font-size: 18px; font-weight: bold; color: var(--text-primary); }
+        .card-categoria { background-color: var(--bg-input); color: var(--accent-color); padding: 4px 8px; border-radius: 4px; font-size: 12px; }
+        .card-descricao { color: var(--text-secondary); font-size: 15px; margin-bottom: 10px; white-space: pre-wrap; }
+        .card-data { font-size: 12px; color: #555; display: flex; justify-content: space-between; align-items: center; }
+
+        .btn-apagar {
+            background-color: transparent; color: var(--danger-color);
+            border: 1px solid var(--danger-color); padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 12px;
+        }
+        .btn-apagar:active { background-color: var(--danger-color); color: white; }
+        #sem-anotacoes { text-align: center; color: #555; font-style: italic; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <div id="topo-data-hora">
+        <div id="data-hora-texto">Carregando...</div>
+    </div>
+
+    <div id="msg-sucesso"></div>
+
+    <div id="container-form">
+        <h2>Nova Anotação</h2>
+        <div class="campo-form">
+            <label>Título</label>
+            <input type="text" id="titulo" placeholder="Ex: Loguin do sistema">
+        </div>
+        <div class="campo-form">
+            <label>Categoria</label>
+            <select id="categoria">
+                <option value="Trabalho">Trabalho</option>
+                <option value="Pessoal">Pessoal</option>
+                <option value="Senhas">Senhas</option>
+                <option value="Outros">Outros</option>
+            </select>
+        </div>
+        <div class="campo-form">
+            <label>Descrição</label>
+            <textarea id="descricao" placeholder="Escreva os detalhes aqui..."></textarea>
+        </div>
+        
+        <button class="btn-salvar" id="btn-salvar">Adicionar na Tela</button>
+    </div>
+
+    <div id="container-lista">
+        <h2>Suas Anotações</h2>
+        <div id="lista-anotacoes"></div>
+    </div>
+
+    <script>
+        // 1. RELÓGIO COM SEGUNDOS
+        function atualizarRelogio() {
+            const agora = new Date();
+            const dia = String(agora.getDate()).padStart(2, '0');
+            const mes = String(agora.getMonth() + 1).padStart(2, '0');
+            const ano = agora.getFullYear();
+            const hora = String(agora.getHours()).padStart(2, '0');
+            const minuto = String(agora.getMinutes()).padStart(2, '0');
+            const segundo = String(agora.getSeconds()).padStart(2, '0'); // ADICIONADO OS SEGUNDOS
+            document.getElementById('data-hora-texto').innerText = `📅 ${dia}/${mes}/${ano}  |  🕒 ${hora}:${minuto}:${segundo}`;
+        }
+        atualizarRelogio();
+        setInterval(atualizarRelogio, 1000);
+
+        let minhasAnotacoes = [];
+        const msgSucesso = document.getElementById('msg-sucesso');
+
+        function mostrarMsg(texto, cor) {
+            msgSucesso.style.backgroundColor = cor;
+            msgSucesso.innerText = texto;
+            msgSucesso.style.display = "block";
+            setTimeout(() => { msgSucesso.style.display = 'none'; }, 3000);
+        }
+
+        // 2. FUNÇÕES PARA SALVAR E CARREGAR DO CELULAR AUTOMATICAMENTE
+        function salvarAutomatico() {
+            try {
+                localStorage.setItem('app_anotacoes_financeiro', JSON.stringify(minhasAnotacoes));
+            } catch (e) {
+                // Se o celular bloquear, ele não mostra erro, apenas não salva por baixo dos panos.
+            }
+        }
+
+        function carregarAutomatico() {
+            try {
+                const dados = localStorage.getItem('app_anotacoes_financeiro');
+                if (dados) {
+                    minhasAnotacoes = JSON.parse(dados);
+                }
+            } catch (e) {
+                minhasAnotacoes = [];
+            }
+        }
+
+        // 3. BOTÃO ADICIONAR
+        document.getElementById('btn-salvar').addEventListener('click', function() {
+            const titulo = document.getElementById('titulo').value.trim();
+            const categoria = document.getElementById('categoria').value;
+            const descricao = document.getElementById('descricao').value.trim();
+
+            if(titulo === '' || descricao === '') {
+                mostrarMsg("❌ Preencha título e descrição!", "#e74c3c");
+                return;
+            } 
+
+            minhasAnotacoes.push({
+                titulo: titulo,
+                categoria: categoria,
+                descricao: descricao,
+                dataSalvo: new Date().toLocaleString('pt-BR')
+            });
+
+            document.getElementById('titulo').value = '';
+            document.getElementById('descricao').value = '';
+            
+            mostrarMsg("✅ Adicionado e salvo!", "#2ecc71");
+            salvarAutomatico(); // Salva assim que adiciona
+            desenharAnotacoes();
+        });
+
+        // 4. DESENHAR NA TELA E APAGAR
+        function desenharAnotacoes() {
+            const listaDiv = document.getElementById('lista-anotacoes');
+            listaDiv.innerHTML = ''; 
+
+            if (minhasAnotacoes.length === 0) {
+                listaDiv.innerHTML = '<p id="sem-anotacoes">Nenhuma anotação salva ainda.</p>';
+                return;
+            }
+
+            minhasAnotacoes.forEach((anotacao, index) => {
+                const card = document.createElement('div');
+                card.className = 'card-anotacao';
+                card.innerHTML = `
+                    <div class="card-header">
+                        <span class="card-titulo">${anotacao.titulo}</span>
+                        <span class="card-categoria">${anotacao.categoria}</span>
+                    </div>
+                    <div class="card-descricao">${anotacao.descricao}</div>
+                    <div class="card-data">
+                        <span>Salvo em: ${anotacao.dataSalvo}</span>
+                        <button class="btn-apagar" data-index="${index}">Apagar</button>
+                    </div>
+                `;
+                listaDiv.appendChild(card);
+            });
+
+            document.querySelectorAll('.btn-apagar').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const idx = e.target.getAttribute('data-index');
+                    minhasAnotacoes.splice(idx, 1);
+                    salvarAutomatico(); // Salva quando apaga
+                    desenharAnotacoes();
+                });
+            });
+        }
+
+        // INICIA O APP CARREGANDO O QUE TEM NO CELULAR
+        carregarAutomatico();
+        desenharAnotacoes();
+    </script>
+</body>
+</html>
