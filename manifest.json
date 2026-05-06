@@ -1,14 +1,19 @@
 {
-  "name": "minhas anotações",
-  "short_name": "anotacoes",
-  "description": "anotação de Login e senhas da aec",
+  "name": "Minhas Anotacoes",
+  "short_name": "Anotacoes",
+  "description": "App de anotacoes rapido",
   "start_url": "index.html",
   "display": "fullscreen",
-  "background_color": "#000000",
-  "theme_color": "#000000",
+  "background_color": "#0a0a12",
+  "theme_color": "#0a0a12",
   "icons": [
     {
-      "src": "icone.png",
+      "src": "icone-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icone-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
