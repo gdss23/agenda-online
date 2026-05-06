@@ -1,0 +1,16 @@
+{
+  "name": "minhas anotações",
+  "short_name": "anotacoes",
+  "description": "anotação de Login e senhas da aec",
+  "start_url": "index.html",
+  "display": "fullscreen",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "icone.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
